@@ -26,7 +26,13 @@ A = np.array([x1,x2,x3])
 #Parameters:  b - An array representing the right hand side of explicit formula
 #Returns:  x as a solution representing the next time step solution for the whole spatial domain
 
-def crnkN(b):
+def thms(x1,x2,x3,b):
+   C = np.zeros(len(x1))
+   D = np.zeros(len(b))
+   C[0] = x1[0]/x2[0]
+   X1 = np.divide(C[1:],(x2[1:-1]-x3[1:]*C))
+   
+   
    return solve_banded((1,1), A, b)
 
 # u0(x)
@@ -46,4 +52,4 @@ for j in range(19):
    b = r*F1j + (1-2*r)*F[j] + r*Fj1
    b[0] = r*F[j][1] + (1-2*r)*F[j][0] + 2*r*bL  
    b[-1] = r*F[j][-2] + (1-2*r)*F[j][-1] + 2*r*bR
-   F[j+1] = crnkN(b)
+   F[j+1] = thms(b)
