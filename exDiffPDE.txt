@@ -33,21 +33,21 @@ def thms(x1,x2,x3,b):
    C = np.zeros(len(x1))
    D = np.zeros(len(b))
    X = np.zeros(len(b))
-   for i in range(len(x1))
-      if i = 0:
-         c[i] = x1[i]/x2[i]
+   for i in range(len(x1)):
+      if i == 0:
+         C[i] = x1[i]/x2[i]
       if i != 0:
-         C = x1[i]/(x2[i]-x3[i]*C[i-1])
-   for i in range(len(b))
-      if i = 0:
+         C[i] = x1[i]/(x2[i]-x3[i]*C[i-1])
+   for i in range(len(b)):
+      if i == 0:
          D[i] = b[i]/x2[i]
       if i != 0:
-         D = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
-   for i in range(len(b))
-      if i = 0:
-         X[len(b)-i] = D[len(b)-i]
+         D[i] = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
+   for i in range(len(b)):
+      if i == 0:
+         X[len(b)-i-1] = D[len(b)-i-1]
       if i != 0:
-         X[len(b)-i] = D[len(b)-i] - C[len(b)-i]*X[len(b)-i+1]
+         X[len(b)-i-1] = D[len(b)-i-1] - C[len(b)-i-1]*X[len(b)-i]
    return X
 
 # u0(x)
@@ -67,4 +67,7 @@ for j in range(19):
    b = r*F1j + (1-2*r)*F[j] + r*Fj1
    b[0] = r*F[j][1] + (1-2*r)*F[j][0] + 2*r*bL  
    b[-1] = r*F[j][-2] + (1-2*r)*F[j][-1] + 2*r*bR
-   F[j+1] = thms(b)
+   F[j+1] = thms(x1,x2,x3,b)
+print(F[0])
+print(F[5])
+print(F[13])
