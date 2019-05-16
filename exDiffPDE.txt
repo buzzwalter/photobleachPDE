@@ -9,14 +9,15 @@ import math
 import matplotlib.pyplot as plt
 dx = 0.5 
 dt = 0.05
-a = 249.
+n = 6
+a = math.floor((n-1)*dx/2)
 r = dt/(2*dx**2)
 bL = 1
 bR = 1
-x1 = -r*np.ones(1000)
+x1 = -r*np.ones(n)
 x1[0] = 0
 x1[-1] = 0
-x2 = (1+2*r)*np.ones(1000) 
+x2 = (1+2*r)*np.ones(n) 
 x3 = x1
 A = np.array([x1,x2,x3])
 
@@ -33,20 +34,19 @@ def thms(x1,x2,x3,b):
    C = np.zeros(len(x1))
    D = np.zeros(len(b))
    X = np.zeros(len(b))
-   for i in range(len(x1)):
-      if i == 0:
-         C[i] = x1[i]/x2[i]
-      if i != 0:
-         C[i] = x1[i]/(x2[i]-x3[i]*C[i-1])
    for i in range(len(b)):
       if i == 0:
+         C[i] = x1[i]/x2[i]
          D[i] = b[i]/x2[i]
-      if i != 0:
-         D[i] = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
+      elif i < (len(b)-1):
+        C[i] = x1[i]/(x2[i]-x3[i]*C[i-1])
+        D[i] = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
+      else:
+        D[i] = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
    for i in range(len(b)):
       if i == 0:
          X[len(b)-i-1] = D[len(b)-i-1]
-      if i != 0:
+      else: 
          X[len(b)-i-1] = D[len(b)-i-1] - C[len(b)-i-1]*X[len(b)-i]
    return X
 
@@ -58,12 +58,12 @@ def thms(x1,x2,x3,b):
 def u0(x):
    return np.add(np.ones(len(x)), -0.5*np.exp(-(x - a)**2))
 
-F = np.zeros((20,1000), dtype = float)
-b = np.arange(1000)
+F = np.zeros((20,n), dtype = float)
+b = np.arange(n)
 F[0] = u0(b*dx)
 for j in range(19): 
    F1j = np.concatenate((F[j][1:], F[j][:1]))
-   Fj1 = np.concatenate((F[j][999:],F[j][:999])) 
+   Fj1 = np.concatenate((F[j][(n-1):],F[j][:(n-1)])) 
    b = r*F1j + (1-2*r)*F[j] + r*Fj1
    b[0] = r*F[j][1] + (1-2*r)*F[j][0] + 2*r*bL  
    b[-1] = r*F[j][-2] + (1-2*r)*F[j][-1] + 2*r*bR
