@@ -20,20 +20,35 @@ x2 = (1+2*r)*np.ones(1000)
 x3 = x1
 A = np.array([x1,x2,x3])
 
-# crnkN(b)
+# thms(b)
 #Description: Takes in the discritized explicit formula of the PDE and solves Ax=b where 
 #            A is a constant tridiagonal matrix.
 #Parameters:  b - An array representing the right hand side of explicit formula
-#Returns:  x as a solution representing the next time step solution for the whole spatial domain
+#             x1 - An array representing the first diagonal in the matrix located above the middle row
+#             x2 - An array representing the middle diagonal in the matrix
+#             x3 - An array representing the lower diagonal in the matrix 
+#Returns:  X as a solution representing the next time step solution for the whole spatial domain
 
 def thms(x1,x2,x3,b):
    C = np.zeros(len(x1))
    D = np.zeros(len(b))
-   C[0] = x1[0]/x2[0]
-   X1 = np.divide(C[1:],(x2[1:-1]-x3[1:]*C))
-   
-   
-   return solve_banded((1,1), A, b)
+   X = np.zeros(len(b))
+   for i in range(len(x1))
+      if i = 0:
+         c[i] = x1[i]/x2[i]
+      if i != 0:
+         C = x1[i]/(x2[i]-x3[i]*C[i-1])
+   for i in range(len(b))
+      if i = 0:
+         D[i] = b[i]/x2[i]
+      if i != 0:
+         D = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
+   for i in range(len(b))
+      if i = 0:
+         X[len(b)-i] = D[len(b)-i]
+      if i != 0:
+         X[len(b)-i] = D[len(b)-i] - C[len(b)-i]*X[len(b)-i+1]
+   return X
 
 # u0(x)
 #Description:  Sets up the intial condition for the PDE.
