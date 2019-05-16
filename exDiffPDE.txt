@@ -62,11 +62,13 @@ F = np.zeros((20,n), dtype = float)
 b = np.arange(n)
 F[0] = u0(b*dx)
 for j in range(19): 
-   F1j = np.concatenate((F[j][1:], F[j][:1]))
-   Fj1 = np.concatenate((F[j][(n-1):],F[j][:(n-1)])) 
-   b = r*F1j + (1-2*r)*F[j] + r*Fj1
+   F1j = F[j][:-2]
+   Fj = F[j][1:-1]
+   Fj1 = F[j][2:] 
+   bj = r*F1j + (1-2*r)*Fj + r*Fj1
    b[0] = r*F[j][1] + (1-2*r)*F[j][0] + 2*r*bL  
    b[-1] = r*F[j][-2] + (1-2*r)*F[j][-1] + 2*r*bR
+   b = np.concatenate((b[0],np.concatenate((bj,b[-1]), axis=None)), axis=None)
    F[j+1] = thms(x1,x2,x3,b)
 print(F[0])
 print(F[5])
