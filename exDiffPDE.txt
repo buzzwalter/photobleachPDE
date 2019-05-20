@@ -9,17 +9,14 @@ import math
 import matplotlib.pyplot as plt
 dx = 0.5 
 dt = 0.05
-n = 6
+n = 1000
 a = math.floor((n-1)*dx/2)
 r = dt/(2*dx**2)
-bL = 1
-bR = 1
-x1 = -r*np.ones(n)
-x1[0] = 0
-x1[-1] = 0
+bL = 1.
+bR = 1.
+x1 = -r*np.ones(n-1)
 x2 = (1+2*r)*np.ones(n) 
 x3 = x1
-A = np.array([x1,x2,x3])
 
 # thms(b)
 #Description: Takes in the discritized explicit formula of the PDE and solves Ax=b where 
@@ -39,10 +36,10 @@ def thms(x1,x2,x3,b):
          C[i] = x1[i]/x2[i]
          D[i] = b[i]/x2[i]
       elif i < (len(b)-1):
-        C[i] = x1[i]/(x2[i]-x3[i]*C[i-1])
-        D[i] = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
+         C[i] = x1[i]/(x2[i]-x3[i]*C[i-1])
+         D[i] = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
       else:
-        D[i] = (b[i]-x3[i]*D[i-1])/(x2[i]-x3[i]*C[i-1])
+         D[i] = (b[i]-x3[i-1]*D[i-1])/(x2[i]-x3[i-1]*C[i-1])
    for i in range(len(b)):
       if i == 0:
          X[len(b)-i-1] = D[len(b)-i-1]
@@ -53,7 +50,7 @@ def thms(x1,x2,x3,b):
 # u0(x)
 #Description:  Sets up the intial condition for the PDE.
 #Parameters:  x - an array representing the domain.
-#Returns:  The discrete initial condition.
+#Returns:  The discretized initial condition.
 
 def u0(x):
    return np.add(np.ones(len(x)), -0.5*np.exp(-(x - a)**2))
@@ -66,10 +63,11 @@ for j in range(19):
    Fj = F[j][1:-1]
    Fj1 = F[j][2:] 
    bj = r*F1j + (1-2*r)*Fj + r*Fj1
-   b[0] = r*F[j][1] + (1-2*r)*F[j][0] + 2*r*bL  
-   b[-1] = r*F[j][-2] + (1-2*r)*F[j][-1] + 2*r*bR
-   b = np.concatenate((b[0],np.concatenate((bj,b[-1]), axis=None)), axis=None)
+   bi = r*F[j][1] + (1.-2.*r)*F[j][0] + 2.*r*bL
+   bf = r*F[j][-2] + (1.-2.*r)*F[j][-1] + 2.*r*bR
+   b = np.concatenate((bi,np.concatenate((bj,bf), axis=None)), axis=None)
    F[j+1] = thms(x1,x2,x3,b)
-print(F[0])
-print(F[5])
-print(F[13])
+plt.plot(np.arange(n), F[0])
+plt.plot(np.arange(n), F[1])
+plt.plot(np.arange(n), F[5])
+plt.plot(np.arange(n), F[10])
