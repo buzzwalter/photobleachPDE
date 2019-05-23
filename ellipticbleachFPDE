@@ -1,0 +1,21 @@
+import numpy as np 
+import scipy as sp
+import matplotlib.pyplot as plt
+n = 6 
+m = 6
+N = n*m
+D = 1
+E = 1
+a = 1
+b = 2
+dp = .5 
+dz = .5
+dt = .01
+rp1 = D*dt/(dp**2)
+rp2 = 2*D*dt/(dp**2)
+rp3 = D8dt/(dp)
+rz1 = D*dt/(dz**2)
+rz2 = 2*D*dt/(dz**2)
+A = np.zeros((N,N))
+#only vectors not coupled one of the mesh variables can be global
+x1 = concatenate((np.zeros(n/2),concatenate((rp1*np.ones(N-n),np.zeros(n/2), axis = None)), axis = None)
