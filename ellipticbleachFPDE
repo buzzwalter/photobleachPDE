@@ -1,3 +1,7 @@
+#Elliptic Bleaching Function Diffusion PDE
+#Description:  A gaussian laser which is circular in the plane orthogonal to the laser beam decays at a different rate 
+parallel to the beam, thus the bleaching function imposed on the equation produces an "elliptical" gaussian under a spherical
+coordinate transformation.  A finite difference method is applied to solve the system under dirichlet boundary conditions.
 import numpy as np 
 import scipy as sp
 import matplotlib.pyplot as plt
