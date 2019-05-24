@@ -1,6 +1,8 @@
 import numpy as np 
 import scipy as sp
 import matplotlib.pyplot as plt
+from numpy import ndarray
+from ndarray import flatten
 # simpler calculation if n,m, and thus N are even
 n = 6 
 m = 6
@@ -14,17 +16,23 @@ dz = .5
 dt = .01
 rp1 = D*dt/(dp**2)
 rp2 = 2*D*dt/(dp**2)
-rp3 = D8dt/(dp)
+rp3 = D*dt/(dp)
 rz1 = D*dt/(dz**2)
 rz2 = 2*D*dt/(dz**2)
 A = np.zeros((N,N))
 #only vectors not coupled one of the mesh variables can be global that x3 and x5 will depend on the position in the
-x1 = concatenate((np.zeros(n/2),concatenate((rp1*np.ones(N-n),np.zeros(n/2)), axis = None)), axis = None)
+x1 = concatenate((np.zeros(m/2),concatenate((rp1*np.ones(N-m),np.zeros(m/2)), axis = None)), axis = None)
 x2 = concatenate(([0],concatenate((rz1*np.ones(N-2),[0]),axis=None)),axis=None)
 x4 = x2
-B = np.zeros((n+m-1,N))
-#B[0] = x5 must be in loop
-B[(n+m-2)/2] = x4
-#B[(n+m-1)/2] = x3 must be in loop
-B[(n+m)/2] = x2
+B = np.zeros((2m-1,N))
+C = np.zeros(n-1,m) 
+for i in range(2,n+1)
+    C[i-2] = (rp3/i+rp1)*np.ones(m)
+B[0] = np.concatenate((np.zeros(m/2),np.concatenate((C.flatten(),np.zeros(m/2),axis=None))),axis=None)
+B[m-1] = x4
+H = np.zeros(n,m)
+for i in range(1,n+1)
+    H[i] = (1-rp3/i-rp2-rz2)*np.ones(m)
+B[(n+m-1)/2] = H.flatten() 
+B[m+1] = x2
 B[-1] = x1
