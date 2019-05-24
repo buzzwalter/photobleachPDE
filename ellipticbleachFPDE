@@ -20,7 +20,6 @@ rz1 = D*dt/(dz**2)
 rz2 = 2*D*dt/(dz**2)
 A = np.zeros((N,N))
 #Setting up the sparse matrix B
-#only vectors not coupled one of the mesh variables can be global that x3 and x5 will depend on the position in the block
 x1 = np.concatenate((np.zeros(int(m/2)),np.concatenate((rp1*np.ones(N-m),np.zeros(int(m/2))), axis = None)), axis = None)
 x2 = np.concatenate(([0],np.concatenate((rz1*np.ones(N-2),[0]),axis=None)),axis=None)
 x4 = x2
