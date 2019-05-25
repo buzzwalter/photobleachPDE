@@ -1,14 +1,15 @@
 #Elliptic Bleaching Function Diffusion PDE
-#Description:  A gaussian laser which is circular in the plane orthogonal to the laser beam decays at a different rate 
-parallel to the beam, thus the bleaching function imposed on the equation produces an "elliptical" gaussian under a spherical
-coordinate transformation.  A finite difference method is applied to solve the system under dirichlet boundary conditions.
+#Description:  A gaussian laser which is circular in the plane orthogonal to the laser beam decays at a different rate parallel to the beam, thus the bleaching function imposed on the equation produces an "elliptical" gaussian under a spherical coordinate transformation.  A finite difference method is applied to solve the system under dirichlet boundary conditions.
 import numpy as np 
 import scipy as sp
 import matplotlib.pyplot as plt
+import math
 from numpy import ndarray
+from scipy.linalg import solve_banded
 # simpler calculation if n,m, and thus N are even
 n = 6 
 m = 6
+K = 20
 N = int(n*m)
 D = 1
 E = 1
@@ -17,12 +18,13 @@ b = 2
 dp = .5 
 dz = .5
 dt = .01
+c = n*math.floor((m-1)*dz/2)
 rp1 = D*dt/(dp**2)
 rp2 = 2*D*dt/(dp**2)
 rp3 = D*dt/(dp)
 rz1 = D*dt/(dz**2)
 rz2 = 2*D*dt/(dz**2)
-A = np.zeros((N,N))
+#A = np.zeros((N,N))irrelevant to design probably
 #Setting up the sparse matrix B
 x1 = np.concatenate((np.zeros(int(m/2)),np.concatenate((rp1*np.ones(N-m),np.zeros(int(m/2))), axis = None)), axis = None)
 x2 = np.concatenate(([0],np.concatenate((rz1*np.ones(N-2),[0]),axis=None)),axis=None)
@@ -30,13 +32,22 @@ x4 = x2
 B = np.zeros((2*m-1,N))
 C = np.zeros((n-1,m)) 
 for i in range(2,n+1):
-    C[i-2] = (rp3/i+rp1)*np.ones(m)
+    C[i-2] = (rp3/(i*dp)+rp1)*np.ones(m)
 B[0] = np.concatenate((np.zeros(int(m/2)),np.concatenate((C.flatten(),np.zeros(int(m/2))),axis=None)),axis=None)
 B[m-2] = x4
 H = np.zeros((n,m))
 for i in range(1,n+1):
-    H[i-1] = (1-rp3/i-rp2-rz2)*np.ones(m)
+    H[i-1] = (1-rp3/(i*dp)-rp2-rz2)*np.ones(m)
 B[int((n+m-1)/2)] = H.flatten() 
 B[m] = x2
 B[-1] = x1
-
+d = np.zeros((K,N))
+F = np.zeros((K,N))
+d[0] = 1 + math.exp(-(a*n**2+b*(m-c)**2))
+F[K] = solve_banded((m,m),B,d[0])
+I = dp*np.arange(n)
+J = dz*np.arange(m)
+for j in range(1,K):
+   d[j] = F[K-j+1] + E*np.exp(-(a*I**2+b*(J-c*np.ones(m))**2))
+   # put the exp in a method.  This was used last time and has the effect that the function can be adjusted to different types more easily.
+   F[K-j] = solve_banded((m,m),B,d[j])
