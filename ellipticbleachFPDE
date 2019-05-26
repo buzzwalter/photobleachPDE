@@ -1,5 +1,10 @@
 #Elliptic Bleaching Function Diffusion PDE
-#Description:  A gaussian laser which is circular in the plane orthogonal to the laser beam decays at a different rate parallel to the beam, thus the bleaching function imposed on the equation produces an "elliptical" gaussian under a spherical coordinate transformation.  A finite difference method is applied to solve the system under dirichlet boundary conditions.
+#Description:  A gaussian laser which is circular in the plane orthogonal to the laser beam decays at a different rate
+#parallel to the beam, thus the bleaching function imposed on the equation produces an "elliptical" gaussian under a 
+#spherical coordinate transformation.  A finite difference method is applied to solve the system under dirichlet 
+#boundary conditions.  The mesh under the spherical transformation is n by m, while K time steps are taken.  The equation
+#is written according to the constants as dF/dt = D((1/p)*dF/dp+d^2F/dp^2 + d^2F/dz^2)-E*exp(-(a*p^2+b*(z-c)^2)).  The boundary
+#condition given a certain distance r should make p^2 + z^2 = r^2. 
 import numpy as np 
 import scipy as sp
 from scipy.sparse import diags
@@ -27,8 +32,7 @@ rp3 = D*dt/(dp)
 rz1 = D*dt/(dz**2)
 rz2 = 2*D*dt/(dz**2)
 A = np.zeros((N,N))
-#Setting up the sparse matrix B
-x1 = np.concatenate((np.zeros(int(m/2)),np.concatenate((rp1*np.ones(N-m),np.zeros(int(m/2))), axis = None)), axis = None)
+#Setting up the sparse matrix
 x2 = rz1*np.ones(N-1)
 for i in range(1,n):
     x2[i*m+1] = 0
@@ -36,19 +40,17 @@ x4 = x2
 C = np.zeros((n-1,m)) 
 for i in range(2,n+1):
     C[i-2] = (rp3/(i*dp)+rp1)*np.ones(m)
-
 H = np.zeros((n,m))
 for i in range(1,n+1):
     H[i-1] = (1-rp3/(i*dp)-rp2-rz2)*np.ones(m)
-
-d = np.zeros((n,m))
-F = np.zeros((K,N))
-F[0] = np.ones(N)
 diagonals = [rp1*np.ones(N-m),x2,H.flatten(),x4,C.flatten()]
 A = diags(diagonals,[-m,-1,0,1,m]).todense()
 I = dp*np.ones(n)
 J = dz*np.concatenate((-np.arange(int(m/2)),np.arange(1,int(m/2+1))), axis = None)
 X = np.zeros((n,m))
+d = np.zeros((n,m))
+F = np.zeros((K,N))
+F[0] = np.ones(N)
 for i in range(1,n+1):
     d[i-1] = E*np.exp(-(a*i*I**2+b*(J-c*np.ones(m))**2))
     X[i-1] = np.square(i*I) + np.square(J) 
