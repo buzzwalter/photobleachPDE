@@ -25,35 +25,32 @@ rp2 = 2*D*dt/(dp**2)
 rp3 = D*dt/(dp)
 rz1 = D*dt/(dz**2)
 rz2 = 2*D*dt/(dz**2)
-A = np.zeros((N,N))irrelevant to design probably
+A = np.zeros((N,N))
 #Setting up the sparse matrix B
 x1 = np.concatenate((np.zeros(int(m/2)),np.concatenate((rp1*np.ones(N-m),np.zeros(int(m/2))), axis = None)), axis = None)
-x2 = rz1*np.ones(N-2)
-for in range(1,n)
+x2 = rz1*np.ones(N-1)
+for i in range(1,n):
     x2[i*m+1] = 0
 x4 = x2
-#B = np.zeros((2*m-1,N))
 C = np.zeros((n-1,m)) 
 for i in range(2,n+1):
     C[i-2] = (rp3/(i*dp)+rp1)*np.ones(m)
-#B[0] = np.concatenate((np.zeros(int(m/2)),np.concatenate((C.flatten(),np.zeros(int(m/2))),axis=None)),axis=None)
-#B[m-2] = x4
+
 H = np.zeros((n,m))
 for i in range(1,n+1):
     H[i-1] = (1-rp3/(i*dp)-rp2-rz2)*np.ones(m)
-#B[int((n+m-1)/2)] = H.flatten() 
-#B[m] = x2
-#B[-1] = x1
-d = np.zeros((K,N))
+
+d = np.zeros((n,m))
 F = np.zeros((K,N))
 F[0] = np.ones(N)
 diagonals = [rp1*np.ones(N-m),x2,H.flatten(),x4,C.flatten()]
-A = diags(diagonals,[-m,-1,0,1,m])
-#d[0] = 1 + math.exp(-(a*n**2+b*(m-c)**2))
-#F[K] = solve_banded((m,m),B,d[0])
-I = dp*np.arange(n)
+A = diags(diagonals,[-m,-1,0,1,m]).todense()
+I = dp*np.ones(n)
 J = dz*np.arange(m)
-#for j in range(1,K):
-#   d[j] = F[K-j+1] + E*np.exp(-(a*I**2+b*(J-c*np.ones(m))**2))
-   # put the exp in a method.  This was used last time and has the effect that the function can be adjusted to different types more easily.
-#   F[K-j] = solve_banded((m,m),B,d[j])
+for i in range(1,n+1):
+    d[i-1] = E*np.exp(-(a*i*I**2+b*(J-c*np.ones(m))**2))
+for j in range(1,K):
+    F[j] = np.matmul(A,F[j-1]) - d.flatten()
+print(F[1])
+print(F[5])
+# still need to impose boundary condition for each iteration
