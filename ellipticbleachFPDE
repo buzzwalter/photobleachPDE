@@ -60,7 +60,7 @@ for j in range(1,K):
     for i in range(N):
         if U[i] >= r:
             F[j][i] = 1. 
-print(F[1])
-print(F[5])
-print(F[10])
-print(F[15])
+print(F[1].reshape((n,m)))
+print(F[5].reshape((n,m)))
+print(F[10].reshape((n,m)))
+print(F[15].reshape((n,m)))
